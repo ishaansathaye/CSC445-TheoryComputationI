@@ -67,24 +67,24 @@ Some questions are graded on effort. These require a credible, reasonable attemp
 \begin{enumerate}
     \item \textbf{(Graded on correctness) (25 points)} Given a bit string (a string of 1's and 0's) $w$, the \emph{parity} of $w$ is defined to be 1 if $w$ has an odd number of 1's, and 0 if $w$ has an even number of 1's. Give a recursive definition for the parity of a bit string $w$, with $\varepsilon$ (the empty string) as the base case. (See the lecture notes on string length for inspiration.)
     \begin{itemize}
-        \item Base case: $\varepsilon$ has parity 0
-        \item Inductive step: If $w$ has parity $p$, then $w0$ has parity $p$, and $w1$ has parity $1-p$.
-        \item This definition is recursive because it refers to the parity of $w$ in the inductive step.
+        \item $\varepsilon$ has parity 0, since it has an even number of 1's (0 of them): $parity(\varepsilon) = 0$.
+        \item If $w \in L$ and has parity $p$, then $w0$ has parity $p$, since number of 1's has not changed, so $parity(w0) = parity(w) = p$.
+        \item If $w \in L$ and has parity $p$, then $w1$ has parity $1-p$, since the number of 1's has changed by 1, so $parity(w1) = 1 - parity(w) = 1 - p$.
     \end{itemize}
     \item Give a recursive definition for each of the following languages:
     \begin{enumerate}[(a)]
         \item \textbf{(Graded on effort) (10 points)} The set of all strings of parentheses over the alphabet $\Sigma = \{(, )\}$ that are balanced.
             \begin{solution}
                 \begin{itemize}
-                    \item Base case: ( $\in L$, ) $\in L$, $\varepsilon \in L$
-                    
+                    \item The empty string $\varepsilon$ is balanced and so $\varepsilon \in L$.
+                    \item If $x \in L$ and $y \in L$, where $x$ and $y$ are balanced strings, then $(x)y \in L$.
                 \end{itemize}
 		\end{solution}
         \item \textbf{(Graded on effort) (15 points)} The set of all bit strings over the alphabet $\Sigma = \{0, 1\}$ \textbf{not} containing the string $11$.
  		\begin{solution}
 	      \begin{itemize}
-            \item Base case: $\varepsilon \in L$, 0 $\in L$, 1 $\in L$
-            \item Inductive step: If $w \in L$, then $w0 \in L$, $w1 \in L$, $w00 \in L$, $w01 \in L$, $w10 \in L$
+            \item $\varepsilon \in L$, 0 $\in L$, 1 $\in L$
+            \item If $w \in L$, then $0w \in L$ and $10w \in L$
           \end{itemize}
 		\end{solution}
     \end{enumerate}
@@ -133,20 +133,23 @@ Some questions are graded on effort. These require a credible, reasonable attemp
 	      \begin{solution}
             \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
 
-                \node[state, initial] (q0)   {$q_0$};  % Initial state, no '0's seen
-                \node[state, right of=q0] (q1)   {$q_1$};  % One '0' has been seen
-                \node[state, accepting, right of=q1] (q2)   {$q_2$};  % Two '0's seen
-             
+                \node[state, initial] (q0)   {$q_0$};
+                \node[state, right of=q0] (q1)   {$q_1$};
+                \node[state, right of=q1] (q2)   {$q_2$};
+                \node[state, accepting, right of=q2] (q3)   {$q_3$};
+
                 \path[->]
-                (q0) edge [loop above] node {1} ()  % Self-loop on '1' at q0
-                     edge [bend left] node {0} (q1) % Transition from q0 to q1 on '0'
-             
-                (q1) edge [loop above] node {1} ()  % Self-loop on '1' at q1
-                     edge [bend left] node {0} (q2)  % Transition from q1 to q2 on second '0'
-                     
-                (q2) edge [bend left] node {1} (q1);  % Transition from q2 to q1 on '1'
-             
-             \end{tikzpicture}
+                (q0) edge [loop above] node {1} ()
+                        edge [bend left] node {0} (q1)
+
+                (q1) edge [bend left] node {1} (q2)
+                
+                (q2) edge [loop above] node {1} ()
+                        edge [bend left] node {0} (q3)
+                        
+                (q3) edge [bend left] node {1} (q0);
+
+            \end{tikzpicture}
 		\end{solution}
     \end{enumerate}
 
