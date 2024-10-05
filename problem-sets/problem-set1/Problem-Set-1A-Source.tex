@@ -111,8 +111,8 @@ Some questions are graded on effort. These require a credible, reasonable attemp
 	      \begin{solution}
             \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
 
-                \node[state, initial] (q0)   {$q_0$};
-                \node[state, right of=q0] (q1)   {$q_1$};
+                \node[state, accepting, initial] (q0)   {$q_0$};
+                \node[state, accepting, right of=q0] (q1)   {$q_1$};
                 \node[state, accepting, right of=q1] (q2)   {$q_2$};
              
                 \path[->]
