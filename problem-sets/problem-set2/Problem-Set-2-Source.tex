@@ -1,0 +1,224 @@
+\documentclass{article}
+\def\showanswers{0}
+\def\whichlecture{}
+\def\lecturetopic{}
+
+%%%% Setup
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{caption}
+\usepackage{enumerate}
+\usepackage[shortlabels]{enumitem}
+\usepackage[pdftex]{graphicx}
+\usepackage[scaled]{helvet}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{lstautogobble}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{calc,shapes.multipart,chains,arrows}
+\tikzstyle{vertex}=[circle,draw=black,minimum size=20pt,inner sep=0pt]
+\tikzstyle{edge} = [draw,thick, ->]
+\tikzstyle{undirected edge} = [draw,thick,-]
+\tikzstyle{weight} = [font=\small]
+
+
+\renewcommand\familydefault{\sfdefault} 
+\usepackage[T1]{fontenc}
+
+
+\theoremstyle{definition}
+\newtheorem{exercise}{Exercise}
+\newtheorem{question}{Question}
+
+\newenvironment {solution}
+{
+\begin{tcolorbox}
+}
+{
+\end{tcolorbox}
+}
+%%%%
+
+
+\title{Problem Set 2: Context-Free Languages}
+\author{Daniel Frishberg}
+\date{Cal Poly CSC 445, Fall 2024}
+
+\begin{document}
+\lstset{upquote=true}
+\setlength\parindent{0em}
+
+\maketitle
+\section{Instructions for Submission}
+The \textbf{regular deadline} for this problem set is \textbf{Thursday, November 7, at 11:59pm.} The \textbf{late deadline} for this problem set is \textbf{Friday, November 8, at 11:59pm.} Please upload a PDF or image of your work to Canvas. Legible handwriting or typing is fine. Please submit \textbf{just your answers, and not the problem set document}.
+
+\section{How to solve/use this problem set}
+Some questions are graded on effort. These require a credible, reasonable attempt for credit. Any such attempt will receive full credit. Other questions are graded on correctness.
+\textbf{Questions that are graded on correctness are indicated as such in bold.}
+
+\section{Required Problems}
+\begin{enumerate}
+    \item Give context-free grammars that generate the following languages:
+    \begin{enumerate}[(a)]
+        \item (6 points) \textbf{(Graded on effort)} \[\{uu^R \mid u \in \Sigma^*\}\] where $\Sigma = \{0, 1\}$
+        \begin{solution}
+            \begin{align*}
+                S &\rightarrow 0S0 \mid 1S1 \mid \varepsilon
+            \end{align*}
+        \end{solution}
+        \item (12 points) \textbf{(Graded on correctness)}
+        \[\{a^ib^jc^k \mid i = j + k\textnormal{ and } i,j,k \geq 0\}\]
+        \begin{solution}
+            \begin{align*}
+                S &\rightarrow aSc \mid T \mid \varepsilon \\
+                T &\rightarrow aTb \mid \varepsilon
+            \end{align*}
+        \end{solution}
+    \end{enumerate}
+
+    \item (16 points) \textbf{(Graded on correctness)} Construct a PDA that recognizes the language in Question 1(b).
+    \begin{solution}
+        \begin{center}
+            
+            \begin{tikzpicture}[shorten >=1pt, node distance=2.5cm, on grid, auto]
+                % States
+                \node[state, initial, accepting] (q0) {$q_0$};
+                \node[state] (q1) [right=of q0] {$q_1$};
+                \node[state] (q2) [right=of q1] {$q_2$};
+                \node[state] (q3) [below=of q2] {$q_3$};
+                \node[state, accepting] (q4) [left=of q3] {$q_4$};
+             
+                % Transitions
+                \path[->]
+                    (q0) edge node {$\epsilon, \epsilon \rightarrow \$ $} (q1)
+             
+                    % Transitions for pushing 'a' onto the stack
+                    (q1) edge [loop above] node {$a, \epsilon \rightarrow a$} (q1)
+             
+                    % Epsilon transition to begin reading 'b's
+                    (q1) edge node {$\epsilon, \epsilon \rightarrow \epsilon$} (q2)
+             
+                    % Transitions for matching 'b's with 'A' on the stack
+                    (q2) edge [loop above] node {$b, a \rightarrow \epsilon$} (q2)
+             
+                    % Transition from 'b' phase to 'c' phase
+                    (q2) edge[bend left] node [right] {$c, a \rightarrow \epsilon$} (q3)
+             
+                    % Transitions for matching 'c's with 'A' on the stack
+                    (q3) edge [loop below] node {$c, a \rightarrow \epsilon$} (q3)
+             
+                    % Acceptance transition when the stack is empty
+                    (q2) edge[bend right] node [left] {$\epsilon, \$ \rightarrow \epsilon$} (q4)
+                    (q3) edge node [below] {$\epsilon, \$ \rightarrow \epsilon$} (q4);
+             \end{tikzpicture}
+        \end{center}
+    \end{solution}
+    
+    \item (12 points) \textbf{(Graded on effort)} Convert the following grammar to Chomsky normal form. You do not have to follow the specific steps of the conversion algorithm; any valid CNF grammar that is equivalent to the original grammar is sufficient.
+    \begin{align*}
+        S &\rightarrow SUU\\
+        U &\rightarrow TTU \mid \varepsilon \\
+        T &\rightarrow aa \mid b
+    \end{align*}
+    \begin{solution}
+        \begin{align*}
+            S_0 &\rightarrow SX \mid SU \\
+            S &\rightarrow SX \mid SU \\
+            X &\rightarrow UU \\
+            Y &\rightarrow TT \\
+            U &\rightarrow YU \mid TT \\
+            T &\rightarrow AA \mid b \\
+            A &\rightarrow a
+        \end{align*}
+    \end{solution}
+    \item Consider the following context-free grammar~$G$ in Chomsky normal form (CNF):
+
+    \begin{align*}
+        S &\rightarrow AU \mid \varepsilon \\ 
+        T &\rightarrow AU \\
+        U &\rightarrow TB | b\\
+        A &\rightarrow a \\
+        B &\rightarrow b
+    \end{align*}
+    \begin{enumerate}[(a)]
+        \item (6 points) \textbf{(Graded on correctness)} Write, in set-builder notation, the language this CFG generates.
+        \begin{solution}
+            \[L = \{a^n b^n \mid n \geq 0\}\]
+        \end{solution}
+        \item (14 points) \textbf{(Graded on correctness)} Use the CYK algorithm to test whether~$G$ generates the string $w = aabb$. (Just show the final table and say whether $G$ generates $w$ or not.) 
+        \begin{solution}
+            \begin{center}
+                \begin{tabular}{|c|c|c|c|}
+                    \hline
+                    $\{{S, T}\}$ & & &  \\
+                    \hline
+                    $\emptyset$ & $\{{U}\}$ & & \\
+                    \hline
+                    $\emptyset$ & $\{{S, T}\}$ & $\emptyset$ &  \\
+                    \hline
+                    $\{{A}\}$ & $\{{A}\}$ & $\{{U, B}\}$ & $\{{U, B}\}$ \\
+                    \hline
+                    $\boldsymbol{a}$ & $\boldsymbol{a}$ & $\boldsymbol{b}$ & $\boldsymbol{b}$ \\
+                    \hline
+                \end{tabular}
+            \end{center}
+            $G$ generates $w$.
+        \end{solution}
+    \end{enumerate}
+    \item (20 points) \textbf{(Graded on correctness)} Prove using the Pumping Lemma for context-free languages that the language
+    \[
+        L_1 = \{\#u\#u \mid u \in \{0, 1\}^*\}
+    \]
+    is not context free
+    where $\Sigma = \{0, 1, \#\}$.
+    
+    This illustrates that the basic task of checking whether two strings are equal cannot be straightforwardly accomplished with a CFG or a PDA.
+
+    \begin{solution}
+        Suppose for a contradition that L is context free. Then there exists a 
+        pumping length $p$. Let $w = \#0^p1^p\#0^p1^p$. Then $w \in L$ and $|w| \geq p$.
+        Therefore there exists $u$, $v$, $x$, $y$, $z$ such that $w = uvxyz$, and:
+        \begin{enumerate}
+            \item For all $i \geq 0$, $uv^ixy^iz \in L$
+            \item $|vy| > 0$
+            \item $|vxy| \leq p$
+        \end{enumerate}
+        Let $i = 2$. Then $uv^2xy^2z = uvvxyyz$ and is in $L$ by (a). Since $|vxy|
+        \leq p$, $vxy$ must be contained in the first half of $w$ or the second half of $w$. 
+        After pumping, the string is now of the form $\#u^{'}\#u$ where $u^{'}$ 
+        is not equal to $u$, where the two halves of the string are not the same. 
+        Therefore $uv^2xy^2z \notin L$. This is a contradiction.
+    \end{solution}
+    
+    \item (14 points) \textbf{(Graded on correctness)} Closure
+    (Sipser Ex. 3.12 p. 175)
+    Consider the language
+    \begin{align*}
+    L = \{\#x_1\#x_2\#\cdots \#x_l \mid & \forall i, x_i \in \{0,1\}^*, \\ 
+    &\textnormal{ and } \exists i\neq j, x_i = x_j \}
+    \end{align*}
+    where $\Sigma = \{0, 1, \#\}$
+
+    Intuitively, $w \in L$ consists of $l$ different strings, where at least two of the strings are identical.
+
+    (By the way, this is the \textbf{complement} of the \emph{element distinctness problem} in Sipser Ex. 3.12, p. 175.)
+    
+    Prove that $L$ is not context free using the closure properties of context-free languages and the fact that $L_1$ from the previous question is not context free.
+
+    \begin{solution}
+        Suppose for a contradiction that $L$ is context free. 
+        
+        Let $L_2$ be the language $\#\{0, 1\}^*\#\{0, 1\}^*$ and is regular. 
+        Then by closure properties of context free languages, 
+        $L \cap L_2$ is context free. However, $L \cap L_2 = L_1$, which we 
+        know is not context free. This is a contradiction.
+    \end{solution}
+
+\end{enumerate}
+
+\end{document}
+
